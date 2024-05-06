@@ -1,0 +1,24 @@
+{
+  "name": "abstract-socket-rs",
+  "version": "1.0.0",
+  "description": "abstract-socket-rs based on ffi-rs without node-gyp",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhangyuang/abstract-socket-rs.git"
+  },
+  "keywords": [
+    "abstract-socket",
+    "rust",
+    "ffi-rs"
+  ],
+  "author": "zhangyuang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zhangyuang/abstract-socket-rs/issues"
+  },
+  "scripts": {
+    "build": "g++ -std=c++11 -dynamiclib -o libsum.so abstract.cc"
+  },
+  "homepage": "https://github.com/zhangyuang/abstract-socket-rs#readme"
+}
