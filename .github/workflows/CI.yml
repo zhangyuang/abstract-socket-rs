@@ -29,8 +29,7 @@ jobs:
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:stable-2023-09-17-x64
             build: |-
               set -e &&
-              target=x86_64-unknown-linux-gnu yarn build &&
-              strip *.node &&
+              yarn build &&
               ls
 
           - host: ubuntu-latest
@@ -41,7 +40,6 @@ jobs:
               uname -a &&
               apt-get update &&
               apt-get install gcc-aarch64-linux-gnu -y &&
-              export CFLAGS="$CFLAGS -D__GLIBC_USE\(...\)=0" &&
               yarn build
           - host: ubuntu-latest
             target: x86_64-unknown-linux-musl
@@ -50,7 +48,6 @@ jobs:
               set -e && uname -a && apk update &&
               apk add linux-headers &&
               CC="/usr/bin/x86_64-alpine-linux-musl-gcc" LDFLAGS="-L/usr/lib/gcc/x86_64-alpine-linux-musl/12.2.1/" yarn build &&
-              strip *.node && yarn test &&
               ls
 
           - host: ubuntu-latest
@@ -74,9 +71,6 @@ jobs:
         with:
           node-version: 18
           check-latest: true
-
-
-
       - uses: goto-bus-stop/setup-zig@v2
         if: ${{ matrix.settings.target == 'armv7-unknown-linux-gnueabihf' }}
         with:
@@ -88,14 +82,7 @@ jobs:
 
       - name: Install dependencies
         run: ls
-      - name: Setup node x86
-        uses: actions/setup-node@v4
-        if: matrix.settings.target == 'i686-pc-windows-msvc'
-        with:
-          node-version: 18
-          check-latest: true
 
-          architecture: x86
       - name: Build in docker
         uses: addnab/docker-run-action@v3
         if: ${{ matrix.settings.docker }}
@@ -110,7 +97,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: bindings-${{ matrix.settings.target }}
+          name: ${{ matrix.settings.target }}
           path: |
             *.so
             *.dll

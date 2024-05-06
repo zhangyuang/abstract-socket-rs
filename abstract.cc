@@ -1,3 +1,4 @@
+#include <cstddef> // For offsetof
 #include <cstdint>
 #include <cstring>
 #include <errno.h>

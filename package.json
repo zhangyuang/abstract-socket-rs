@@ -18,7 +18,10 @@
     "url": "https://github.com/zhangyuang/abstract-socket-rs/issues"
   },
   "scripts": {
-    "build": "g++ -std=c++11 -dynamiclib -o libsum.so abstract.cc"
+    "build": "gcc -shared -fPIC -o libsocket.so abstract.cc"
   },
-  "homepage": "https://github.com/zhangyuang/abstract-socket-rs#readme"
+  "homepage": "https://github.com/zhangyuang/abstract-socket-rs#readme",
+  "dependencies": {
+    "ffi-rs": "^1.0.70"
+  }
 }
