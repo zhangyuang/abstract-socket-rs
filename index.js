@@ -55,7 +55,7 @@ const bind = (...params) => (
     library,
     funcName: "Bind",
     retType: DataType.I32,
-    paramsType: [DataType.I32, DataType.String],
+    paramsType: [DataType.I32, DataType.String, DataType.I32],
     paramsValue: params
   })
 )
@@ -64,7 +64,7 @@ const connect = (...params) => {
     library,
     funcName: "Connect",
     retType: DataType.I32,
-    paramsType: [DataType.I32, DataType.String],
+    paramsType: [DataType.I32, DataType.String, DataType.I32],
     paramsValue: params
   })
 
