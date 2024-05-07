@@ -29,48 +29,50 @@ const init = () => {
   if (arch === "x64") {
     open({
       library,
+      // path: "./libsocket.so"
       path: isMusl() ? resolve(__dirname, "./x86_64-unknown-linux-musl.so") : resolve(__dirname, "./x86_64-unknown-linux-gnu.so"),
     });
-  }
-  if (arch === "arm64") {
+  } else if (arch === "arm64") {
     open({
       library,
       path: isMusl() ? resolve(__dirname, "./aarch64-unknown-linux-musl.so") : resolve(__dirname, "./aarch64-unknown-linux-gnu.so"),
     });
+  } else {
+    console.error(`load abstract-socket-rs error: unsupported arch ${arch}`)
   }
-  console.error(`load abstract-socket-rs error: unsupported arch ${arch}`)
 }
 const socket = () => (
   load({
     library,
-    funcName: "socket",
+    funcName: "Socket",
     retType: DataType.I32,
     paramsType: [],
-    paramsValue: [],
+    paramsValue: []
   })
 )
 const bind = (...params) => (
   load({
     library,
-    funcName: "bind",
+    funcName: "Bind",
     retType: DataType.I32,
     paramsType: [DataType.I32, DataType.String],
     paramsValue: params
   })
 )
-const connect = (...params) => (
-  load({
+const connect = (...params) => {
+  return load({
     library,
-    funcName: "connect",
+    funcName: "Connect",
     retType: DataType.I32,
     paramsType: [DataType.I32, DataType.String],
     paramsValue: params
   })
-)
+
+}
 const close = (...params) => (
   load({
     library,
-    funcName: "close",
+    funcName: "Close",
     retType: DataType.I32,
     paramsType: [DataType.I32],
     paramsValue: params
@@ -83,18 +85,16 @@ const errnoException = require('util')._errnoException;
 class AbstractSocketServer extends net.Server {
   constructor(listener) {
     super(listener);
-    init()
   }
 
   listen(name, listener) {
     let err = socket();
+
     if (err < 0) {
       this.emit(errnoException(err, 'socket'));
     }
-
     const handle = { fd: err };
-
-    err = bind(err, name);
+    err = bind(err, name, name.length);
     if (err < 0) {
       close(handle.fd);
       this.emit(errnoException(err, 'bind'));
@@ -105,11 +105,13 @@ class AbstractSocketServer extends net.Server {
 
 
 exports.createServer = function(listener) {
+  init()
   return new AbstractSocketServer(listener);
 };
 
 
 exports.connect = exports.createConnection = function(name, connectListener) {
+  init()
   const defaultOptions = {
     readable: true,
     writable: true
@@ -125,7 +127,7 @@ exports.connect = exports.createConnection = function(name, connectListener) {
   const options = Object.assign({ fd: err }, defaultOptions);
 
   // yes, connect is synchronous, so sue me
-  err = connect(err, name);
+  err = connect(err, name, name.length);
   if (err < 0) {
     close(options.fd);
     const sock = new net.Socket(defaultOptions);

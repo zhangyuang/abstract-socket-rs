@@ -1,5 +1,6 @@
 #include <cstddef> // For offsetof
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
 #include <errno.h>
 #include <sys/socket.h>
@@ -20,52 +21,48 @@ int Socket() {
   return fd;
 }
 
-int Bind(int fd, const char *path) {
+int Bind(int fd, const char *path, int path_len) {
   sockaddr_un s;
   socklen_t namelen;
   int err;
-  unsigned int len = std::strlen(path);
 
   if (path[0] != '\0') {
     return -EINVAL;
   }
 
-  if (len > sizeof(s.sun_path)) {
+  if (path_len > sizeof(s.sun_path)) {
     return -EINVAL;
   }
 
   std::memset(&s, 0, sizeof(s));
-  std::memcpy(s.sun_path, path, len);
+  std::memcpy(s.sun_path, path, path_len);
   s.sun_family = AF_UNIX;
-  namelen = offsetof(struct sockaddr_un, sun_path) + len;
+  namelen = offsetof(struct sockaddr_un, sun_path) + path_len;
 
   if (bind(fd, reinterpret_cast<struct sockaddr *>(&s), namelen)) {
     err = -errno;
   } else {
     err = 0;
   }
-
   return err;
 }
 
-int Connect(int fd, const char *path) {
+int Connect(int fd, const char *path, int path_len) {
   sockaddr_un s;
   socklen_t namelen;
   int err;
-  unsigned int len = std::strlen(path);
-
   if (path[0] != '\0') {
     return -EINVAL;
   }
 
-  if (len > sizeof(s.sun_path)) {
+  if (path_len > sizeof(s.sun_path)) {
     return -EINVAL;
   }
 
   std::memset(&s, 0, sizeof(s));
-  std::memcpy(s.sun_path, path, len);
+  std::memcpy(s.sun_path, path, path_len);
   s.sun_family = AF_UNIX;
-  namelen = offsetof(struct sockaddr_un, sun_path) + len;
+  namelen = offsetof(struct sockaddr_un, sun_path) + path_len;
 
   if (connect(fd, reinterpret_cast<struct sockaddr *>(&s), namelen)) {
     err = -errno;
