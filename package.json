@@ -1,6 +1,6 @@
 {
   "name": "abstract-socket-rs",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "abstract-socket-rs based on ffi-rs without node-gyp",
   "main": "index.js",
   "repository": {
