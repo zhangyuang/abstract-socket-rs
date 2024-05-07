@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/zhangyuang/abstract-socket-rs#readme",
   "dependencies": {
-    "ffi-rs": "1.0.73-0"
+    "ffi-rs": "^1.0.73"
   },
   "files": [
     "*.so",
